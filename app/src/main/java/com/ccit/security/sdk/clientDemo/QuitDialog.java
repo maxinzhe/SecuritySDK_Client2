@@ -16,7 +16,9 @@ import com.servcie.VoipService;
 public class QuitDialog  extends AlertDialog.Builder{
     public QuitDialog(final Context context) {
         super(context);
-        this.setIcon(R.drawable.ic_luncher2);
+
+        this.setIcon(R.drawable.exit);
+        this.setInverseBackgroundForced(false);
         this.setTitle("退出");
         this.setMessage("确定退出并不接受来电了吗？");
         this.setPositiveButton("退出", new DialogInterface.OnClickListener() {

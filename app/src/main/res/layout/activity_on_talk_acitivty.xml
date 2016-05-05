@@ -14,7 +14,7 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/fullscreen_content"
+            android:id="@+id/textview_receiverName"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -25,17 +25,16 @@
             android:textStyle="bold"
             android:layout_marginTop="100dp" />
 
-        <TextView
-            android:id="@+id/state"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:keepScreenOn="true"
-            android:text="状态为："
-            android:textColor="#c4faf9"
-            android:textSize="35sp"
-            android:textStyle="bold"
-            android:layout_marginTop="50dp" />
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="100dp"
+            android:text="查看动态数据"
+            android:id="@+id/watch_data_button_from_caller"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="100dp"
+            android:background="@android:color/holo_blue_bright"
+            android:textSize="20dp"
+            android:textColor="#ffffff" />
     </LinearLayout>
 
     <!-- This FrameLayout insets its children based on system windows using
@@ -60,9 +59,13 @@
                 android:id="@+id/hangup_button"
                 style="?metaButtonBarButtonStyle"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="60dp"
                 android:layout_weight="1"
-                android:text="挂断" />
+                android:text="挂 断"
+                android:background="#ff6262"
+                android:layout_marginBottom="10dp"
+                android:textSize="25dp"
+                android:textColor="#ffffff" />
 
         </LinearLayout>
     </FrameLayout>

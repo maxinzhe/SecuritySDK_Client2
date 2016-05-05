@@ -38,8 +38,8 @@
                 android:background="@drawable/cert"
                 android:clickable="true"
                 android:enabled="true"
-                android:focusable="true"
-                android:focusableInTouchMode="true" />
+                android:focusable="false"
+                android:focusableInTouchMode="false" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -63,8 +63,8 @@
                 android:background="@drawable/call"
                 android:clickable="true"
                 android:enabled="true"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 android:layout_marginLeft="10dp" />
 
             <TextView

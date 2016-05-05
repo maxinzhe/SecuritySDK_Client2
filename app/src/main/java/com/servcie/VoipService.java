@@ -8,11 +8,13 @@ import android.util.Log;
 
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class VoipService extends Service {
     private Thread threadtoServer;
     private Thread threadtoPeer;
-
+    public ServiceConstant serviceConstant;
     private final IBinder mBinder=new LocalBinder();
     public VoipService() {
     }
@@ -33,11 +35,26 @@ public class VoipService extends Service {
         super.onCreate();
         Log.i("test",this.getClass().getName()+" 中的service onCreate");
 
-        threadtoServer =new ThreadtoServer();
+        try {
+            threadtoServer =new ThreadReceiverOfClientFromServer();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
 
-        threadtoPeer=new ThreadtoPear();
+        try {
+            threadtoPeer=new ThreadReceiverOfP2P();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
 
         startThreadtoServer();
+
+        try {
+            serviceConstant=new ServiceConstant() ;
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -56,7 +73,7 @@ public class VoipService extends Service {
     }
 
     public  void startThreadtoServer(){
-        if(threadtoServer.isAlive()){
+        if((threadtoServer!=null)&&(threadtoServer.isAlive())){
             threadtoServer.interrupt();
             Log.i("test","startThreadtoServer: thread toServer is already running ,so interrupt it");
         }
@@ -93,21 +110,4 @@ public class VoipService extends Service {
     }
 
 
-    private abstract class  ServiceConstant{
-        int THREAD_TO_SERVER_LOCAL_PORT;
-        int THREAD_TO_SERVER_REMOTE_PORT;
-
-        InetAddress THREAD_TO_SERVER_LOCAL_ADDRESS;
-        InetAddress THREAD_TO_SERVER_REMOTE_ADDRESS;
-
-        int THREAD_TO_PEAR_LOCAL_PORT;
-        int THREAD_TO_PEAR_REMOTE_PORT;
-
-
-        InetAddress THREAD_TO_PEAR_LOCAL_ADDRESS;
-        InetAddress THREAD_TO_PEAR_REMOTE_ADDRESS;
-        public ServiceConstant() {
-
-        }
-    }
 }
