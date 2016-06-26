@@ -3,11 +3,13 @@ package com.messagehandler;
 import com.mApplication;
 import com.messagemodel.BasicModel;
 
+import java.io.IOException;
+
 /**
  * Created by Xinzhe on 2016/4/28.
  */
 public class DH_B_Handler extends BasicDH_Handler{
-    public DH_B_Handler(BasicModel basicModel) {
+    public DH_B_Handler(BasicModel basicModel) throws IOException {
         super(basicModel);
     }
 
@@ -20,8 +22,7 @@ public class DH_B_Handler extends BasicDH_Handler{
     protected void differABWork() {
         super.differABWork();
         mApplication.bkey=keyString;
-
-        mApplication.dh.setDH_b_forA(bkey);
+//set DHB for A end ;
     }
 
     @Override

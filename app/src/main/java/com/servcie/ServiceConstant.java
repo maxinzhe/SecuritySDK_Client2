@@ -14,15 +14,17 @@ public class  ServiceConstant{
        public   static  InetAddress THREAD_TO_SERVER_LOCAL_ADDRESS;
        public   static  InetAddress THREAD_TO_SERVER_REMOTE_ADDRESS;
 
-       public   static  int THREAD_TO_PEAR_LOCAL_PORT;
-       public   static  int THREAD_TO_PEAR_REMOTE_PORT;
+       public   static  int THREAD_TO_PEAR_LOCAL_PORT=8101;
+       public   static  int THREAD_TO_PEAR_REMOTE_PORT=8101;
 
 
        public   static InetAddress THREAD_TO_PEAR_LOCAL_ADDRESS;
        public   static InetAddress THREAD_TO_PEAR_REMOTE_ADDRESS;
         public ServiceConstant() throws UnknownHostException {
 
-            THREAD_TO_SERVER_REMOTE_ADDRESS=InetAddress.getByName("172.29.56.18");
+            THREAD_TO_SERVER_REMOTE_ADDRESS=InetAddress.getByName("192.168.253.1");
+           THREAD_TO_SERVER_REMOTE_PORT=8000;
+
         }
         public ServiceConstant(InetAddress THREAD_TO_PEAR_LOCAL_ADDRESS,int THREAD_TO_PEAR_LOCAL_PORT) throws UnknownHostException {
 

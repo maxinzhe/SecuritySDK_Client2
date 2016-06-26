@@ -10,7 +10,10 @@ public class BasicMessageHandler extends Thread{
 
     public BasicMessageHandler(BasicModel basicModel) {
         super();
-        basicModel=basicModel;
+        this.basicModel=basicModel;
+    }
+
+    public BasicMessageHandler() {
     }
 
     @Override

@@ -2,13 +2,12 @@ package com.servcie;
 
 import android.util.Log;
 
+import com.mApplication;
 import com.messagemodel.BasicModel;
-
-import org.json.JSONException;
+import com.voice.VOICE_DATA_Handler;
 
 import java.io.IOException;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import udpReliable.JsonModel;
@@ -25,6 +24,7 @@ public abstract class ThreadReceiver extends Thread {
 
     public ThreadReceiver() throws SocketException {
         super();
+        initTypeList();
     }
 
     /**
@@ -97,22 +97,32 @@ public abstract class ThreadReceiver extends Thread {
             3.switch fields into different cases,and handle them
             4.
              */
-            Log.i("test","in the loop of Thread Receiver");
+            Log.i("ThreadReceiver","in the loop of Thread Receiver");
 
             initUdpReceiver();
 
             try {
                  rawData=receiver.getData();
 
+                Log.i("ThreadReceiver","接到的数据的长度为 "+rawData.length);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            try{
 
-            jsonModel = new JsonModel(rawData);
-            type=jsonModel.getType();
-            basicModel=jsonModel.getBasicModel();
+                jsonModel = new JsonModel(rawData);
+                type=jsonModel.getType();
+                basicModel=jsonModel.getBasicModel();
 
-            switchPath ();
+                Log.e("test Data received ","data received "+jsonModel.toString());
+                switchPath ();
+            }catch (Exception e){
+
+                Log.e("test Data received ","不能解析成json格式，按照音频处理");
+                new VOICE_DATA_Handler(rawData,mApplication.player).start();
+            }
+
 
         }
     }

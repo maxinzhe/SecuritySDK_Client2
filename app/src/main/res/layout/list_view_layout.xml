@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal|left"
     android:clickable="false"
-    android:focusable="false">
+    android:focusable="false"
+    android:background="@android:color/background_light">
     <RadioButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="bbb"
-        android:textSize="30dp"
+        android:textSize="10dp"
         android:layout_marginLeft="40dp"
         android:id="@+id/id_list_view" />
 </com.ccit.security.sdk.clientDemo.TestLinear>

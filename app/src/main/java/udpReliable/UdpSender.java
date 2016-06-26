@@ -1,6 +1,10 @@
 package udpReliable;
 
+import android.util.Log;
+
 import com.mApplication;
+import com.messagehandler.BasicMessageHandler;
+import com.messagemodel.BasicModel;
 import com.servcie.ServiceConstant;
 
 import java.io.IOException;
@@ -30,8 +34,11 @@ public class UdpSender {
 
     public  void sendDategram(byte[] data) throws IOException {
         byte[]databyte=data;
+
+
         DatagramPacket packet=new DatagramPacket(databyte,databyte.length,REMOTE_ADDRESS,REMOTE_PORT);
         socket.send(packet);
+        Log.i("test","data send address"+packet.getAddress()+" "+packet.getPort()+" "+new String(packet.getData()));
         ready=false;
 
     }

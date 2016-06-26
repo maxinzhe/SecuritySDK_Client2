@@ -27,13 +27,24 @@ import DH.DH;
 
 
 public class mApplication extends Application {
+
+    public static final int DIALOG_STAE_NEGTIVE=0;
+    public static final int DIALOG_STAE_POSITIVE=1;
+    public static final int DIALOG_STAE_READY=2;
+
+    public static Thread recordThread;
+
+    public  volatile static boolean stopRecording=false;
+
     /**
      * data watch view
      */
+    public static volatile  int voice_dialog_state=DIALOG_STAE_READY;
+
     public static volatile boolean  visualDialogIsPaused=false;
     public     static volatile boolean isPlayDecryptedOrEncrypted=true;
-    static public EditText decryptedEditText;
-    static public  EditText encryptedEditText;
+    volatile  static public EditText decryptedEditText;
+     volatile static public  EditText encryptedEditText;
     /**
      * device info
      */
@@ -44,6 +55,7 @@ public class mApplication extends Application {
 
     public static Application instance;
 
+    public static String targetCertString;
     public static Certificate peerCertificate;
 
     public static DH dh=new DH();
@@ -51,16 +63,20 @@ public class mApplication extends Application {
 
     public static String akey;
     public static String bkey;
+    public static String symKeyString;
 
+    public static int SAMPLE_RATE=8000;
 
-    static int SAMPLE_RATE=8000;
-
-    public static int bufferSize = android.media.AudioTrack.getMinBufferSize(SAMPLE_RATE,
-            AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
-
+    public static int bufferSize;
     public static AudioTrack player;
 
 
+    public static void setCallingFlag(){
+        stopRecording=false;
+    }
+    public static void setHangupFlag(){
+        stopRecording=true;
+    }
     public static List<Map<String,String >> contactsList;
 
     /**
@@ -71,11 +87,19 @@ public class mApplication extends Application {
 
 
 
-    public static Handler handler;
+    public static volatile Handler handler;
+
+    public static volatile Handler answer_window_handler;
+
+
+
+    public static String targetId;
+    public static String targetName;
 
     private void initPlay(){
-
-        int bufferLength=bufferSize;
+        bufferSize = android.media.AudioTrack.getMinBufferSize(SAMPLE_RATE,
+            AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+        int bufferLength=2*bufferSize;//use double space to handle the situation of encrypted noise data will over flow.
 
         // 获得音轨对象
          player = new AudioTrack(AudioManager.STREAM_VOICE_CALL,
@@ -88,6 +112,7 @@ public class mApplication extends Application {
         // 设置喇叭音量
         player.setStereoVolume(1.0f, 1.0f);
 
+       // player.play();
         // 开始播放声音
 
     }
@@ -97,6 +122,7 @@ public class mApplication extends Application {
         instance=this;
         try {
             udpSocketOfClient=new DatagramSocket(new ServiceConstant().THREAD_TO_SERVER_LOCAL_PORT);
+            udpSocketOfPeer=new DatagramSocket(new ServiceConstant().THREAD_TO_PEAR_LOCAL_PORT);
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (UnknownHostException e) {
@@ -112,6 +138,7 @@ public class mApplication extends Application {
     @Override
     public void onTerminate() {
         super.onTerminate();
+        Log.i("mApplication","mApplication onTerminate");
         if((udpSocketOfClient!=null)&&(!udpSocketOfClient.isClosed())){
             udpSocketOfClient.close();
         }

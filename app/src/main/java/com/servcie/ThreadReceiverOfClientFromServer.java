@@ -20,6 +20,7 @@ import udpReliable.UdpReceiver;
 public class ThreadReceiverOfClientFromServer extends ThreadReceiver {
     public ThreadReceiverOfClientFromServer() throws SocketException {
         super();
+
     }
 
     @Override
@@ -39,7 +40,7 @@ public class ThreadReceiverOfClientFromServer extends ThreadReceiver {
         typeList.add(0, JsonModel.MESSAGE_TYPE.TYPE_CONTACTS_LIST);
         typeList.add(1, JsonModel.MESSAGE_TYPE.TYPE_HOLE_INFO);
         typeList.add(2, JsonModel.MESSAGE_TYPE.TYPE_CONTACTS_OFFLINE);
-        typeList.add(3, JsonModel.MESSAGE_TYPE.TYPE_CONTACTS_ONlINE);
+        typeList.add(3, JsonModel.MESSAGE_TYPE.TYPE_CONTACTS_ONLINE);
     }
 
     @Override

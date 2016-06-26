@@ -1,8 +1,9 @@
 package udpReliable;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.messagemodel.BasicModel;
-import com.messagemodel.client2server.LOGIN_Model;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,23 +18,31 @@ public class JsonModel {
          */
 
         /**
-         * TYPE_LOGIN string1:id number(phone number);string2:name
+         * The hear beat signal, structure same as TYPE_LOGIN.
+         */
+
+        TYPE_BEAT,
+
+
+
+        /**
+         * TYPE_LOGIN s1:id number(phone number);s2:name
          *
          */
         TYPE_LOGIN,
 
         /**
-         * TYPE_LOGOFF string1:id
+         * TYPE_LOGOFF s1:id
          */
         TYPE_LOGOFF,
 
         /**
-         * TYPE_P2PpREQUESET string1:target id in string form
+         * TYPE_P2PpREQUESET s1:target id in string form
          */
         TYPE_P2P_REQUEST,
 
         /**
-         * string1: wrong info.server should manage and return the TYPE_P2P_CANCEL
+         * s1: wrong info.server should manage and return the TYPE_P2P_CANCEL
          */
         TYPE_CER_WRONG,
 
@@ -70,10 +79,10 @@ public class JsonModel {
         /**
          *list:the online people id and name
          */
-        TYPE_CONTACTS_ONlINE,
+        TYPE_CONTACTS_ONLINE,
 
         /**
-         *    string1:the peer ip,port: peer port
+         *    s1:the peer ip,port: peer port
          *
          */
         TYPE_HOLE_INFO,
@@ -87,33 +96,49 @@ public class JsonModel {
         TYPE_HOLE_P2P,
 
         /**
-         * string1:the  certification for exchange
+         * s1:the  certification for exchange
          */
         TYPE_CER_DATA,
 
         TYPE_CER_ACK,
         TYPE_VOICE,
         TYPE_DH_A,
-        TYPE_DH_B
+        TYPE_DH_B,
+
+        /**
+         *send to pear to inform that the end is hang up.
+         */
+        TYPE_HANG_UP
+
     } ;
 
     MESSAGE_TYPE type;
     byte[] data;
     Gson gson=new Gson();
 
+
     JSONObject jsonObject;
     BasicModel basicModel=new BasicModel();
 
     public JsonModel(byte[] json){
+        Log.i("test JsonModel","received json data is: "+new String(json));
         data=json;
         basicModel=gson.fromJson(new String(json),BasicModel.class);
-        type=basicModel.type;
+        type=basicModel.t;
     }
 
     public JsonModel(BasicModel basicModel){
-        data=gson.toJson(basicModel).getBytes();
+        //data=gson.toJson(basicModel).getBytes();
+        String dataString=gson.toJson(basicModel);
+        data=dataString.getBytes();
+        try {
+            JSONObject jsonObject=new JSONObject(dataString);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         this.basicModel=basicModel;
-        this.type=basicModel.type;
+        this.type=basicModel.t;
     }
 
     public MESSAGE_TYPE getType(){

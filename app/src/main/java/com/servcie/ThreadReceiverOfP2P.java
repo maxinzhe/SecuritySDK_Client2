@@ -4,10 +4,12 @@ import com.mApplication;
 import com.messagehandler.CER_DATA_Handler;
 import com.messagehandler.DH_A_Handler;
 import com.messagehandler.DH_B_Handler;
+import com.messagehandler.HANG_UP_Handler;
 import com.messagehandler.HOLE_P2P_Handler;
 import com.messagemodel.BasicModel;
 import com.voice.VOICE_DATA_Handler;
 
+import java.io.IOException;
 import java.net.SocketException;
 import java.util.ArrayList;
 
@@ -41,6 +43,7 @@ public class ThreadReceiverOfP2P extends ThreadReceiver {
         typeList.add(2, JsonModel.MESSAGE_TYPE.TYPE_DH_A);
         typeList.add(3, JsonModel.MESSAGE_TYPE.TYPE_DH_B);
         typeList.add(4, JsonModel.MESSAGE_TYPE.TYPE_VOICE);
+        typeList.add(5,JsonModel.MESSAGE_TYPE.TYPE_HANG_UP);
     }
 
     @Override
@@ -60,7 +63,11 @@ public class ThreadReceiverOfP2P extends ThreadReceiver {
 
     @Override
     void handleMessage3(BasicModel basicModel) {
-        new DH_B_Handler(basicModel).start();
+        try {
+            new DH_B_Handler(basicModel).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -70,7 +77,7 @@ public class ThreadReceiverOfP2P extends ThreadReceiver {
 
     @Override
     void handleMessage5(BasicModel basicModel) {
-
+        new HANG_UP_Handler(basicModel).start();
     }
 
     @Override

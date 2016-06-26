@@ -24,10 +24,10 @@ import android.widget.Toast;
 
 import com.mApplication;
 import com.messagehandler.MessagePacketerOfClient;
+import com.messagehandler.MessagePacketerOfPeer;
 import com.servcie.VoipService;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import udpReliable.JsonModel;
@@ -54,8 +54,11 @@ public class CallWindow extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+
         isOnTop=true;
         initListView();
+
+        mApplication.voice_dialog_state=mApplication.DIALOG_STAE_READY;
 
     }
 
@@ -80,11 +83,18 @@ public class CallWindow extends Activity {
                 if(msg.what==0){
                     initListView();//refresh the contacts list
                 }else if(msg.what==2){//2 for negative answer window
+                    Log.i("test CallWindow","handler received msg==2,try to start A Call Window");
                     Intent intent=new Intent(CallWindow.this,AnswerWindow.class) ;
+                    intent.putExtra("caller_name",mApplication.targetName);
                     startActivity(intent);
+                    Log.i("test CallWindow","handler received msg==2,try to start A Call Window");
+                }else if(msg.what==10){//set the positivew view
+                    initView();
                 }
             }
+
         };
+
         mApplication.handler=handler;
 
             watchDatatextView = (TextView) findViewById(R.id.encrypted_editText);
@@ -95,14 +105,14 @@ public class CallWindow extends Activity {
         if(mApplication.contactsList==null){
             mApplication.contactsList=new ArrayList<Map<String, String>>();
         }
-        Map<String,String> map1=new HashMap<String, String>();
-        map1.put("name","Tom");
-        map1.put("id","00001");
-        Map<String,String> map2=new HashMap<String,String >();
-        map2.put("name","Marc");
-        map2.put("id","00002");
-        mApplication.contactsList.add(map1);
-        mApplication.contactsList.add(map2);
+        //Map<String,String> map1=new HashMap<String, String>();
+        //map1.put("name","Tom");
+        //map1.put("id","00001");
+        //Map<String,String> map2=new HashMap<String,String >();
+        //map2.put("name","Marc");
+        //map2.put("id","00002");
+        //mApplication.contactsList.add(map1);
+        //mApplication.contactsList.add(map2);
     }
     private  void initListView(){
         Log.i("test","initListView");
@@ -113,6 +123,7 @@ public class CallWindow extends Activity {
 
             SimpleAdapter adapter=new SimpleAdapter(CallWindow.this,mApplication.contactsList,R.layout.list_view_layout,from,itemId);
             contactsListView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         }
 
     }
@@ -161,7 +172,7 @@ public class CallWindow extends Activity {
             @Override
             public void onClick(View v) {
 
-
+                mApplication.player.play();///////////////
                 if(targetId==null){
                     //new AlertDialog to remind
                     AlertDialog.Builder builder=new NoContactAlertDialog(CallWindow.this);
@@ -173,13 +184,17 @@ public class CallWindow extends Activity {
                     @Override
                     protected void setModel() {
                         super.setModel();
-                        modeltosend.type= JsonModel.MESSAGE_TYPE.TYPE_P2P_REQUEST;
-                        modeltosend.string1=targetId;
+                        modeltosend.t = JsonModel.MESSAGE_TYPE.TYPE_P2P_REQUEST;
+                        modeltosend.s1 =mApplication.deviceId;
+                        modeltosend.s2 =targetId;
+
                     }
                 }.send();
 
                // mService.startThreadtoPear();
                 setContentView(R.layout.activity_on_talk_acitivty);
+
+                mApplication.voice_dialog_state=mApplication.DIALOG_STAE_POSITIVE;
                 initView2();
                 /**
                  *  set active for the DH
@@ -196,7 +211,9 @@ public class CallWindow extends Activity {
                 Toast.makeText(CallWindow.this,(String)map.get("name"),Toast.LENGTH_SHORT).show();
 
                 targetId=(String)map.get("id");
+                mApplication.targetId=targetId;
                 targetName=(String)map.get("name");
+                mApplication.targetName=targetName;
             }
         });
 
@@ -206,8 +223,21 @@ public class CallWindow extends Activity {
     private void initView2(){
       hangupButton=(Button)  findViewById(R.id.hangup_button);
         hangupButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
+                mApplication.setHangupFlag();
+                new MessagePacketerOfPeer(){
+                    @Override
+                    protected void setModel() {
+                        super.setModel();
+                        modeltosend.t= JsonModel.MESSAGE_TYPE.TYPE_HANG_UP;
+
+                    }
+                }.send();
+                if(mApplication.recordThread!=null&&mApplication.recordThread.isAlive()){
+                    mApplication.recordThread.interrupt();
+                }
                 mService.stopThreadtoPeer();
 
                 setContentView(R.layout.activity_call_window);
@@ -233,4 +263,5 @@ public class CallWindow extends Activity {
             }
         });
     }
+
 }

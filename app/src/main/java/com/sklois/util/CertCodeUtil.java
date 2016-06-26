@@ -20,6 +20,9 @@ public class CertCodeUtil {
 
         return Base64.decode(getBase64CodedwithoutHeadandTile(base64String),Base64.DEFAULT);
     }
+    public String getBase64CodedStringfromBinaryBytes(byte [] binary){
+        return Base64.encodeToString(binary,Base64.DEFAULT);
+    }
 
 
     public  String getBase64CodedwithoutHeadandTile(String temp){

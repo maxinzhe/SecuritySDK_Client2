@@ -5,20 +5,25 @@
     android:layout_height="match_parent"
     tools:context="com.ccit.security.sdk.clientDemo.CallWindow"
     android:orientation="vertical"
-    android:gravity="center">
+    android:gravity="center"
+    android:background="@android:color/darker_gray">
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="请选择联系人"
-        android:id="@+id/textView13" />
+        android:id="@+id/textView13"
+        android:gravity="center"
+        android:textSize="30dp"
+        android:textStyle="bold" />
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="400dp"
         android:id="@+id/listView"
-        android:layout_gravity="top" />
+        android:layout_gravity="top"
+        android:background="@android:color/darker_gray" />
 
     <LinearLayout
         android:orientation="vertical"

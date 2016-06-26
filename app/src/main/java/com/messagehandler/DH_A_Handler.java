@@ -1,10 +1,15 @@
 package com.messagehandler;
 
+import android.util.Base64;
+import android.util.Log;
+
+import com.PKI.PrivateKeyUtil;
+import com.PKI.RSACoder;
 import com.mApplication;
 import com.messagemodel.BasicModel;
-import com.sklois.haiyunKms.SoftLibs;
+import com.sklois.util.CertCodeUtil;
 
-import java.security.Security;
+import java.io.IOException;
 
 import javax.crypto.SecretKey;
 
@@ -16,15 +21,34 @@ import udpReliable.JsonModel;
 public class DH_A_Handler extends BasicMessageHandler {
     String akey;
     String bkey;
-    byte[] privateKeybytes= SoftLibs.getInstance().GetLocalPriKey(SoftLibs.SGD_KEYUSAGE_KEYEXCHANGE,mApplication.deviceId,null);
-    String privateKey=new String(privateKeybytes);
+    String privateKey;
+
+
+    {
+        Log.i("test DH_A_Handler", "Device id to get privatekey is" +mApplication.deviceId);
+    }
+
     String akeyEncrypted;
     String bkeyEncrypted;
-    String publicKeyofPeerCert=new String(mApplication.peerCertificate.getPublicKey().getEncoded());
-
+    //byte[][] akeyBytes;
+    String [] akeyStrings ;
+    byte[] publicKeyofPeerCertBytes = mApplication.peerCertificate.getPublicKey().getEncoded();
+    String publicKeyofPeerCertString=new CertCodeUtil().getBase64CodedStringfromBinaryBytes(publicKeyofPeerCertBytes);
     SecretKey symkey;
     public DH_A_Handler(BasicModel basicModel) {
         super(basicModel);
+
+       // byte[] privateKeybytes= SoftLibs.getInstance().GetLocalPriKey(SoftLibs.SGD_KEYUSAGE_KEYEXCHANGE,mApplication.deviceId,"12345678");
+        try {
+
+                     privateKey= new PrivateKeyUtil(mApplication.deviceId).readPrivateKeyfromSD();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+            Log.i("test DH_A_Handler","privateKeyString: "+privateKey);
+
 
     }
 
@@ -39,39 +63,70 @@ public class DH_A_Handler extends BasicMessageHandler {
          * 4.send b encrypted to peer
          * 5.get and set the symkey
          */
+        akeyStrings=basicModel.dhKeyS;
+        //akeyEncrypted=basicModel.s1;
+        byte [] akeyDecrypted=null;
+        try {
+            akeyDecrypted=RSACoder.decrypteLongDatawithPrivateKeyafterBase64Decoded(akeyStrings,privateKey);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        akeyEncrypted=basicModel.string1;
-        byte[] akeyDecrypted=SoftLibs.getInstance().DecryptByPriKey(com.sklois.haiyunKms.SoftLibs.ASYM_ALGO_RSA_2048,privateKey,akeyEncrypted.getBytes());
-        akey=new String(akeyDecrypted);
+        akey=new CertCodeUtil().getBase64CodedStringfromBinaryBytes(akeyDecrypted);
+        Log.i("test DH_A_Handler"," received akeyDecrypted is :"+akey);
         mApplication.akey=akey;
 
+        //mApplication.dh.getDH_b(akey);
+
+        Log.i("test DH_Handler","正在生成dh_B……");
         bkey= mApplication.dh.getDH_b(akey);
+        //bkey="MIIBpzCCARsGCSqGSIb3DQEDATCCAQwCgYEA/X9TgR11EilS30qcLuzk5/YRt1I870QAwx4/gLZRJmlFXUAiUftZPY1Y+r/F9bow9subVWzXgTuAHTRv8mZgt2uZUKWkn5/oBHsQIsJPu6nX/rfGG/g7V+fGqKYVDwT7g/bTxR7DAjVUE1oWkTL2dfOuK2HXKu/yIgMZndFIAccCgYEA9+GghdabPd7LvKtcNrhXuXmUr7v6OuqC+VdMCz0HgmdRWVeOutRZT+ZxBxCBgLRJFnEj6EwoFhO3zwkyjMim4TwWeotUfI0o4KOuHiuzpnWRbqN/C/ohNWLx+2J6ASQ7zKTxvqhRkImog9/hWuWfBpKLZl6Ae1UlZAFMO/7PSSoCAgIAA4GFAAKBgQCsWfGs5s8Y9drX0tz7ADxEQ+n3eFFSvgluaucO2pSZYMb7PT1qtPb9b3yjQSamwUrzDa5ZEkX2vYyxN8GaPkyYrZa9J3uwUu/FjI9AYCYh0YQAPpL74iKuk5g7yGJPdtKS7A96mgPuZbwIUIMMo2f5RUb6xoDATeu8xh+v/DKmSw==";
+        Log.i("test DH_Handler","dh_B生成完毕:"+bkey);
+        byte[] symkeybyte=mApplication.dh.getSymKeyInB().getEncoded();
+        String symkeyString= Base64.encodeToString(symkeybyte,Base64.DEFAULT);
+
+        mApplication.symkey=symkey;
+        mApplication.symKeyString=symkeyString;
+        Log.i("test DH_Handler","本端生成的对称密钥为"+symkeyString);
+
+
         mApplication.bkey=this.bkey;
 
         /**
          * encrypt b key using the public key
          */
-       byte[] bkeyEncryptedbytes=SoftLibs.getInstance().EncryptByPubkey(SoftLibs.ASYM_ALGO_RSA_2048,publicKeyofPeerCert,bkey.getBytes());
-        bkeyEncrypted=new String(bkeyEncryptedbytes);
+        byte[] bkeyBytes=new CertCodeUtil().getBase64Decode(bkey);
+
+        String [] encryptedBkeyStrings=null;
+        try {
+            encryptedBkeyStrings=RSACoder.encryptLongDatawithPublicKeyandBase64Coded(bkeyBytes,publicKeyofPeerCertString);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
 
         /*
         get and set the symkey
          */
-        if(mApplication.isAcive){
+        if(mApplication.isAcive){//the end that receive dha is always negative
+            Log.e("test DH_A_Handler","这条语句不会被输出");
 
-           symkey= mApplication.dh.getSymKeyInA();
+            Log.i("test DH_A_Handler","The Active End get symkey:"+new CertCodeUtil().getBase64CodedStringfromBinaryBytes(symkey.getEncoded()));
         }else {
-            symkey=mApplication.dh.getSymKeyInB();
-        }
-        mApplication.symkey=symkey;
 
+            Log.e("test DH_A_Handler","被动端弹出接听activty");
+            mApplication.handler.sendEmptyMessage(2);
+        }
+
+        final String[] finalEncryptedBkeyStrings = encryptedBkeyStrings;
         new MessagePacketerOfPeer(){
             @Override
             protected void setModel() {
                 super.setModel();
-                modeltosend.type= JsonModel.MESSAGE_TYPE.TYPE_DH_B;
-                modeltosend.string1=DH_A_Handler.this.bkeyEncrypted;
+                modeltosend.t = JsonModel.MESSAGE_TYPE.TYPE_DH_B;
+
+                modeltosend.dhKeyS= finalEncryptedBkeyStrings;
             }
         }.send();
 

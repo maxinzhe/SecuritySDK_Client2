@@ -16,8 +16,8 @@ import udpReliable.UdpSender;
  */
 public abstract class MessagePacketer {
     protected BasicModel modeltosend;
-    UdpSender sender=null;
-    byte[] datatosend;
+    protected  UdpSender sender=null;
+    protected byte[] datatosend;
     /**
      * set the address to send:construct the UdpSender
      */
@@ -26,13 +26,14 @@ public abstract class MessagePacketer {
     /**
      * set content for the model to be sent
      */
-    abstract void setModel();
+    protected abstract void setModel();
 
-    MessagePacketer(){
+    protected MessagePacketer(){
         setAddress();
         setModel();
 
         datatosend=new JsonModel(modeltosend).getBytes();
+        Log.i("test MessagePacketer","data to send is: "+new String(datatosend));
 
     }
     public void send()   {

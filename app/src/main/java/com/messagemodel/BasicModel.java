@@ -10,10 +10,12 @@ import udpReliable.JsonModel;
  */
 public class BasicModel {
     public
-    JsonModel.MESSAGE_TYPE type;
+    JsonModel.MESSAGE_TYPE t;
+    public byte[][] dhKey;
+    public String[] dhKeyS;
     public byte[] data;
-    public String string1="";
-    public String string2="";
+    public String s1 ="";
+    public String s2 ="";
     public int port;
     public Map<String,String> list=new HashMap<String,String>();
 

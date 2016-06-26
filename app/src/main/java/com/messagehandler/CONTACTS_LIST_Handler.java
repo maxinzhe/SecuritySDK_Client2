@@ -25,8 +25,9 @@ public class CONTACTS_LIST_Handler  extends BasicMessageHandler{
     }
     protected void initList(){
         contactsList=new ArrayList<Map<String, String>>();
-        HashMap<String,String> item=new HashMap<String, String>();
+        HashMap<String,String> item;
         for(Map.Entry<String,String> entry:rawlist.entrySet()){
+            item=new HashMap<String, String>();
             item.put("id",entry.getKey());
             item.put("name", entry.getValue());
             contactsList.add(item);

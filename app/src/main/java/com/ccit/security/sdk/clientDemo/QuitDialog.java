@@ -25,11 +25,25 @@ public class QuitDialog  extends AlertDialog.Builder{
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Log.i("test",this.getClass().getName().toString()+"退出");
+
+                ((Main2Activity)context).sendLogoffMessage();
                 Intent intent =new Intent(context, VoipService.class);
                 context.stopService(intent);
+               // Thread.sleep(1000);
 
                 Log.i("test","即将调用kill Process") ;
-                android.os.Process.killProcess(Process.myPid());
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        android.os.Process.killProcess(Process.myPid());
+                    }
+                }).start();
 
             }
         });
