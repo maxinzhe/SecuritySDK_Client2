@@ -24,7 +24,7 @@ public class VOICE_DATA_Handler extends BasicMessageHandler {
     String encryptedVoiceString;
     byte[] encryptedVoice;
     byte [] decryptedVoice;
-    public VOICE_DATA_Handler(BasicModel basicModel, AudioTrack player) {
+    public VOICE_DATA_Handler(BasicModel basicModel, AudioTrack player) {//stop using
         super(basicModel);
 
         encryptedVoiceString=basicModel.s1;
@@ -32,6 +32,10 @@ public class VOICE_DATA_Handler extends BasicMessageHandler {
         encryptedVoice= Base64.decode(encryptedVoiceString,Base64.DEFAULT);
     }
     public VOICE_DATA_Handler(byte[] voiceEncrypted,AudioTrack player){
+        mApplication.isVoiceConnected=true;
+        //change the CallActivity UI
+        mApplication.answer_window_handler.sendEmptyMessage(12);
+        Log.i("test","接通标识获得置位true");
         this.player=player;
         String voiceEncryptedString=Base64.encodeToString(voiceEncrypted,Base64.DEFAULT);
         Log.i("VOIDCE_DATA_Handler","接到的声音数据 EncryptedBase64  "+voiceEncryptedString);
@@ -82,7 +86,7 @@ public class VOICE_DATA_Handler extends BasicMessageHandler {
     }
 
     private void setVisualOnDialog(){//这里是不可以直接进行ui更新的，要使用handler进行传递
-        Handler handler=mApplication.handler;//之前的那个uihandler.
+        Handler handler=mApplication.UIThreadHandler;//之前的那个uihandler.
         if(mApplication.encryptedEditText!=null){
             Message message=new Message();
             message.what= SHOW_VOICE_DATA_TO_ENCRYP;

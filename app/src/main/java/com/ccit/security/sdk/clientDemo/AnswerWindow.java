@@ -1,11 +1,13 @@
 package com.ccit.security.sdk.clientDemo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -13,7 +15,6 @@ import com.mApplication;
 import com.messagehandler.HANG_UP_Handler;
 import com.messagehandler.MessagePacketerOfPeer;
 import com.voice.ThreadRecord;
-import com.
 import udpReliable.JsonModel;
 
 public class AnswerWindow extends Activity {
@@ -21,6 +22,7 @@ public class AnswerWindow extends Activity {
     Button watch_data_button;
     TextView text_name_textView;
     Button acceptButton;
+    Button watchDataButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +69,19 @@ public class AnswerWindow extends Activity {
 
             }
         });
+        watchDataButton=(Button)findViewById(R.id.button_watch_data);
+        watchDataButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog alertDialog=new DisplayDialogBuilder(AnswerWindow.this).create();
+                alertDialog.show();
+                WindowManager.LayoutParams params =
+                        alertDialog.getWindow().getAttributes();
+                params.width = 1000;
+                params.height = 1500 ;
+                alertDialog.getWindow().setAttributes(params);
+
+            } });
 
         acceptButton=(Button)findViewById(R.id.button_acceptcall);
         acceptButton.setOnClickListener(new View.OnClickListener() {
@@ -78,6 +93,7 @@ public class AnswerWindow extends Activity {
                  */
                 //??
 
+                mApplication.setCallingFlag();
                 mApplication.player.play();
                 mApplication.recordThread= new ThreadRecord();
                 mApplication.recordThread.start();

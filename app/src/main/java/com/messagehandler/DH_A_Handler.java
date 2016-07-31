@@ -1,10 +1,15 @@
 package com.messagehandler;
 
+import android.app.ActivityOptions;
+import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
 
 import com.PKI.PrivateKeyUtil;
 import com.PKI.RSACoder;
+import com.ccit.security.sdk.clientDemo.AnswerWindow;
+import com.ccit.security.sdk.clientDemo.CallWindow;
 import com.mApplication;
 import com.messagemodel.BasicModel;
 import com.sklois.util.CertCodeUtil;
@@ -37,7 +42,7 @@ public class DH_A_Handler extends BasicMessageHandler {
     SecretKey symkey;
     public DH_A_Handler(BasicModel basicModel) {
         super(basicModel);
-
+        mApplication.thread_dh_A_Handler=DH_A_Handler.this;
        // byte[] privateKeybytes= SoftLibs.getInstance().GetLocalPriKey(SoftLibs.SGD_KEYUSAGE_KEYEXCHANGE,mApplication.deviceId,"12345678");
         try {
 
@@ -63,6 +68,7 @@ public class DH_A_Handler extends BasicMessageHandler {
          * 4.send b encrypted to peer
          * 5.get and set the symkey
          */
+        mApplication.setCallingFlag();
         akeyStrings=basicModel.dhKeyS;
         //akeyEncrypted=basicModel.s1;
         byte [] akeyDecrypted=null;
@@ -116,7 +122,12 @@ public class DH_A_Handler extends BasicMessageHandler {
         }else {
 
             Log.e("test DH_A_Handler","被动端弹出接听activty");
-            mApplication.handler.sendEmptyMessage(2);
+
+            Intent intent=new Intent(mApplication.getInstance(),AnswerWindow.class) ;
+            intent.putExtra("caller_name",mApplication.targetName);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            mApplication.getInstance().startActivity(intent);
+          //  mApplication.UIThreadHandler.sendEmptyMessage(2);
         }
 
         final String[] finalEncryptedBkeyStrings = encryptedBkeyStrings;

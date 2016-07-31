@@ -38,7 +38,7 @@ public class DisplayDialogBuilder extends AlertDialog.Builder  {
 
 
         initView();
-        mApplication.handler=new Handler(){
+        mApplication.UIThreadHandler =new Handler(){
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);

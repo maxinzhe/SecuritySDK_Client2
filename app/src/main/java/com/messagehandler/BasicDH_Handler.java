@@ -65,7 +65,7 @@ public class BasicDH_Handler extends BasicMessageHandler {
         //start an activity to handle the call if negative:2 for the number of start negative activity
         if(!mApplication.isAcive){//the end receive b is active, so never execute these
 
-            mApplication.handler.sendEmptyMessage(2);
+            mApplication.UIThreadHandler.sendEmptyMessage(2);
 
             Log.i("test BasicDH_Handler","被动端发出handleMessage弹出来电画面");
             //start the voice engine in the receiver window button function.

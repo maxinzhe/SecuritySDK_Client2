@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -22,10 +23,12 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dialog.ConnectionFailedDialog;
 import com.mApplication;
 import com.messagehandler.MessagePacketerOfClient;
 import com.messagehandler.MessagePacketerOfPeer;
 import com.servcie.VoipService;
+import com.sklois.util.DelayConnectSuccessCheckerThread;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -72,7 +75,7 @@ public class CallWindow extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_call_window);
+        //setContentView(R.layout.activity_call_window);
         initBindService();
         initView();
 
@@ -83,19 +86,30 @@ public class CallWindow extends Activity {
                 if(msg.what==0){
                     initListView();//refresh the contacts list
                 }else if(msg.what==2){//2 for negative answer window
-                    Log.i("test CallWindow","handler received msg==2,try to start A Call Window");
+                    Log.i("test CallWindow","UIThreadHandler received msg==2,try to start A Call Window");
                     Intent intent=new Intent(CallWindow.this,AnswerWindow.class) ;
                     intent.putExtra("caller_name",mApplication.targetName);
                     startActivity(intent);
-                    Log.i("test CallWindow","handler received msg==2,try to start A Call Window");
-                }else if(msg.what==10){//set the positivew view
+                    Log.i("test CallWindow","UIThreadHandler received msg==2,try to start A Call Window");
+                }else if(msg.what==10){//set the positivew  contacts list view
                     initView();
+                }else if(msg.what==7){
+                    CallWindow.this.finish();
+                }else if(msg.what==11){
+                    //show connect failed dialog
+                    targetId=null;
+                    AlertDialog.Builder builder=new ConnectionFailedDialog(CallWindow.this);
+                    builder.show();
+                }else if(msg.what==12){//get answered, so change the UI color
+
+                    targetNameView.setText("与"+targetName+"通话中");
+                    targetNameView.setTextColor(Color.GREEN);
                 }
             }
 
         };
 
-        mApplication.handler=handler;
+        mApplication.UIThreadHandler =handler;
 
             watchDatatextView = (TextView) findViewById(R.id.encrypted_editText);
 
@@ -166,19 +180,21 @@ public class CallWindow extends Activity {
         }
     }
     private void  initView(){
+        setContentView(R.layout.activity_call_window);
         callButton=(Button)findViewById(R.id.imageButton2);
         callButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-
-                mApplication.player.play();///////////////
                 if(targetId==null){
                     //new AlertDialog to remind
                     AlertDialog.Builder builder=new NoContactAlertDialog(CallWindow.this);
                     builder.show();
                     return;
                 }
+                mApplication.setCallingFlag();
+                new DelayConnectSuccessCheckerThread(CallWindow.this).start();
+                mApplication.player.play();///////////////
                 mApplication.isAcive=true;
                 new MessagePacketerOfClient(){
                     @Override
@@ -216,7 +232,7 @@ public class CallWindow extends Activity {
                 mApplication.targetName=targetName;
             }
         });
-
+        initListView();
         //initListView() is in onResume;
     }
 
@@ -244,6 +260,7 @@ public class CallWindow extends Activity {
                 initView();
 
                 initListView();
+                finish();
             }
         });
        targetNameView=(TextView)findViewById(R.id.textview_receiverName);
@@ -260,8 +277,7 @@ public class CallWindow extends Activity {
                 params.height = 1500 ;
                 alertDialog.getWindow().setAttributes(params);
 
-            }
-        });
+            } });
     }
 
 }

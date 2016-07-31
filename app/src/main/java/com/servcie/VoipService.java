@@ -36,7 +36,7 @@ public class VoipService extends Service {
     public void onCreate() {
         super.onCreate();
 
-       // new HeartBeatThread().start();//start the heart beat thread util process killed.
+       new HeartBeatThread().start();//start the heart beat thread util process killed.
 
         Log.i("test",this.getClass().getName()+" 中的service onCreate");
 

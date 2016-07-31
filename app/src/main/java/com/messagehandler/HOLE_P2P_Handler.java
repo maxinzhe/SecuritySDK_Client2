@@ -12,8 +12,10 @@ import udpReliable.JsonModel;
  * Created by Xinzhe on 2016/4/26.
  */
 public class HOLE_P2P_Handler extends BasicMessageHandler{
+    private static final String LOG_TAG="HOLE_P2P_Handler  ";
     public HOLE_P2P_Handler(BasicModel basicModel) {
         super(basicModel);
+        Log.i("test",LOG_TAG+basicModel.t);
     }
     /*
     1.send the success message to server
@@ -32,6 +34,10 @@ public class HOLE_P2P_Handler extends BasicMessageHandler{
             }
 
         }.send();
+
+
+
+
         new MessagePacketerOfPeer(){
             @Override
             protected void setModel() {

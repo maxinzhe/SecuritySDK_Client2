@@ -1,6 +1,5 @@
 package com.messagehandler;
 
-import com.ccit.security.sdk.clientDemo.AnswerWindow;
 import com.mApplication;
 import com.messagemodel.BasicModel;
 
@@ -27,7 +26,7 @@ public class HANG_UP_Handler extends  BasicMessageHandler{
         }
         if(mApplication.voice_dialog_state!=mApplication.DIALOG_STAE_READY){
             if(mApplication.voice_dialog_state==mApplication.DIALOG_STAE_POSITIVE){
-                mApplication.handler.sendEmptyMessage(10);// call initview()in CallActivity
+                mApplication.UIThreadHandler.sendEmptyMessage(10);// call initview()in CallActivity
             }else if(mApplication.voice_dialog_state==mApplication.DIALOG_STAE_NEGTIVE){
                 mApplication.answer_window_handler.sendEmptyMessage(6);//to finish the answer activity
             }

@@ -27,6 +27,13 @@ import DH.DH;
 
 
 public class mApplication extends Application {
+    /**
+     *  isVoiceConnected is used to show that this end has accepted the voice data from the other end,
+     *  the value will be check after a time delay since Call button has been pressed.
+     */
+    public static volatile boolean isVoiceConnected=false;
+
+
 
     public static final int DIALOG_STAE_NEGTIVE=0;
     public static final int DIALOG_STAE_POSITIVE=1;
@@ -70,7 +77,7 @@ public class mApplication extends Application {
     public static int bufferSize;
     public static AudioTrack player;
 
-
+    public static Thread thread_dh_A_Handler;
     public static void setCallingFlag(){
         stopRecording=false;
     }
@@ -87,7 +94,7 @@ public class mApplication extends Application {
 
 
 
-    public static volatile Handler handler;
+    public static volatile Handler UIThreadHandler;
 
     public static volatile Handler answer_window_handler;
 
@@ -112,7 +119,7 @@ public class mApplication extends Application {
         // 设置喇叭音量
         player.setStereoVolume(1.0f, 1.0f);
 
-       // player.play();
+        // player.play();
         // 开始播放声音
 
     }
